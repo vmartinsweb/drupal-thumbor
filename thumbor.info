@@ -5,3 +5,5 @@ core = 7.x
 package = "media"
 project = "thumbor"
 datestamp = "1417692037"
+
+configure = admin/config/media/thumbor
