@@ -2,7 +2,7 @@
 
 module_load_include('inc', 'thumbor', 'includes/thumbor.form');
 
-/**
+/** 
  * Implements hook_perm().
  */
 function thumbor_permission() {
@@ -52,17 +52,13 @@ function thumbor_image_effect_info() {
  */
 function thumbor_effect_callback(&$image, $data) {
     $image_url = file_create_url($image->source);
-
     $thumbor_url = thumbor_url_generate($data, $image_url);
-
-    if ($image->info['mime_type'] == 'image/jpeg' or $image->info['mime_type'] == 'image/jpg') {    
-        $image->resource = @imagecreatefromjpeg($thumbor_url);
-    } elseif ($image->info['mime_type'] == 'image/png') {
-        $image->resource = @imagecreatefrompng($thumbor_url);
-    } elseif ($image->info['mime_type'] == 'image/gif') {
-        $image->resource = @imagecreatefrompng($thumbor_url);
+    $response = drupal_http_request($thumbor_url);
+    if($response->code != 200){
+        watchdog('image', 'Thumbor effect failed trying proccess image ( Code : %statuscode , URL : %url)', array('%statuscode' => $response->code, '%url' => $thumbor_url), WATCHDOG_ERROR);
+        return FALSE;
     }
-
+    $image->resource = imagecreatefromstring($response->data);
     return TRUE;
 }
 
@@ -109,13 +105,20 @@ function thumbor_url_generate($data, $image_url) {
 
     $thumbor_server = variable_get('thumbor_server');
     $thumbor_key = variable_get('thumbor_key');
+    $thumbor_unsafe = current(variable_get('thumbor_unsafe'));
 
     $thumbor_params[] = $image_url;
 
     $thumbor_url_params = implode('/', $thumbor_params);
 
+    if((bool) $thumbor_unsafe){
+    	// Thumbor with security disabled
+        return $thumbor_server.'/unsafe/'.$thumbor_url_params;
+    }
+
     $thumbor_hmac = base64_encode(hash_hmac('sha1', $thumbor_url_params, $thumbor_key, true));
     $thumbor_hmac = str_replace(array('+','/'), array('-', '_'), $thumbor_hmac);
 
+    // Thumbor with security enabled
     return $thumbor_server.'/'.$thumbor_hmac.'/'.$thumbor_url_params; 
 }
