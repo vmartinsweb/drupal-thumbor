@@ -1,6 +1,4 @@
-# drupal-thumbor
-
-Drupal module to create a image styles with Thumbor effects.
+# Thumbor Drupal module
 
 Thumbor is a smart imaging service. It enables on-demand crop, resizing and flipping of images. It features a very smart detection of important points in the image for better cropping and resizing, using state-of-the-art face and feature detection algorithms.
 
