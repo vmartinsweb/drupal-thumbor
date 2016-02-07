@@ -15,6 +15,14 @@ function thumbor_admin_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
+  $form['thumbor_unsafe'] =  array(
+    '#type' => 'checkboxes',
+    '#options' => array('1' => t('Yes')),
+    '#title' => t('Enable unsafe url?'),
+    '#default_value' => variable_get('thumbor_unsafe', array()),
+    '#description' => t("If enabled, Thumbor Key bellow isn't required."),
+  );
+
   $form['thumbor_key'] = array(
     '#type' => 'textarea',
     '#title' => t('Thumbor Key'),
