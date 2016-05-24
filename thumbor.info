@@ -2,7 +2,7 @@ name = Thumbor
 description = "Applying the effects of thumbor."
 version = "7.x-1.0"
 core = 7.x
-package = "media"
+package = "Media"
 project = "thumbor"
 datestamp = "1417692037"
 
